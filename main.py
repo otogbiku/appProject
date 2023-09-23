@@ -1,25 +1,13 @@
 from kivy.lang import Builder
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.image import Image
-from kivymd.uix.screen import MDScreen
-from kivymd.uix.screenmanager import MDScreenManager
-
+from kivy.properties import ObjectProperty
 
 from kivymd.app import MDApp
+from kivymd.uix.scrollview import MDScrollView
 from kivy.core.window import Window
 
-from kivymd.uix.dialog import MDDialog
-from kivymd.uix.button import MDRectangleFlatButton
+Window.size = (300, 600)
 
-
-Window.size = (400, 600)
-
-
-
-
-
-
-kv = '''
+KV = '''
 <DrawerClickableItem@MDNavigationDrawerItem>
     focus_color: "#e7e4c0"
     text_color: "#4a4939"
@@ -35,80 +23,133 @@ kv = '''
     selected_color: "#4a4939"
     _no_ripple_effect: True
 
+MDScreen:
 
+    MDTopAppBar:
+        pos_hint: {"top": 1}
+        text: "love this" 
+        elevation: 10
+        title: "Navigate to Meter "
+        font_title: 10
+        left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]]
 
+    MDNavigationLayout:
 
-MDNavigationLayout:
-
-    MDScreenManager:
-
-        MDScreen:
-
-            MDTopAppBar:
-                title: "METER NAVIGATION"
-                elevation: 10
-                pos_hint: {"top": 1}
-                md_bg_color: "#e7e4c0"
-                specific_text_color: "#4a4939"
-                left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]]
-                
-            MDTextField: 
-                hint_text: "have an account"
-                helper_text: "is optional"
-                icon_right: "gmail"
-                helper_text_mode: "persistent"
-                pos_hint: {"center_x": 0.5, "center_y": 0.5}
-                size_hint_x: None 
-                width: 300
-                
-                
+        MDScreenManager:
+            id: screen_manager
             
+            MDScreen:
+                name: "scr 1"
+                MDLabel:
+                    text: " MAIN TRANSMISSION UNIT "
+                    pos_hint: {"center_x": 0.9, "center_y": 0.8} 
+                    font_size: 20 
+                    size_hint_x: None 
+                    width: 500 
+                    font_text_color: "Red"
+                
+                          
                 
                 
+   
 
-    MDNavigationDrawer:
-        id: nav_drawer
-        radius: (0, 16, 16, 0)
+            MDScreen:
+                name: "scr 2"
+                MDLabel:
+                    text: " INFRASTRUCTURE  "
+                    pos_hint: {"center_x": 1, "center_y": 0.8} 
+                    font_size: 20 
+                    size_hint_x: None 
+                    width: 500  
+                
+                    
+            MDScreen:
+                name: "scr 3"
 
+                MDLabel:
+                    text: " LONG GOODS  "
+                    pos_hint: {"center_x": 1.1, "center_y": 0.8} 
+                    font_size: 20
+                    size_hint_x: None 
+                    width: 500   
+                
+                    
+            MDScreen: 
+                name: "scr 4"
+                MDLabel: 
+                    text: " SHORT GOODS "
+                    pos_hint: {"center_x": 1.1, "center_y": 0.8} 
+                    font_size: 20 
+                    size_hint_x: None
+                    size_hint_y: None 
+                    width: 500  
+                
+                    
+
+        MDNavigationDrawer:
+            id: nav_drawer
+            radius: (0, 5, 5, 0)
+
+            ContentNavigationDrawer:
+                screen_manager: screen_manager
+                nav_drawer: nav_drawer
+                
+                
+<ContentNavigationDrawer>
+
+    MDList:
         MDNavigationDrawerMenu:
 
-            MDNavigationDrawerHeader:
-                title: "HELLO"
-                title_color: "#4a4939"
-                text: "ENGINEERING METER READING"
-                spacing: "4dp"
-                padding: "12dp", 0, 0, "56dp"
+        MDNavigationDrawerHeader:
+            title: "HELLO"
+            title_color: "#4a4939"
+            text: "ENGINEERING METER READING"
+            spacing: "4dp"
+            padding: "12dp", 0, 0, "56dp"
+        
+        MDNavigationDrawerLabel:
+            text: "METER OPTIONS "
 
-            MDNavigationDrawerLabel:
-                text: "METER OPTIONS "
+        
+        
+        
+        DrawerClickableItem:
+            icon: "send"
+            text_right: "hello"
+            text: "MTU"
+            on_press:
+                root.nav_drawer.set_state("close")
+                root.screen_manager.current = "scr 1"
+            
+                    
+            
+            
 
-            DrawerClickableItem:
-                icon: "send"
-                right_text:
-                text_right_color: "#4a4939"
-                text: "MTU"
-                id: mtu_screen
-
-            DrawerClickableItem:
-                icon: "send"
-                text: "INFRASTRUCTURE "
-                id: infra_screen
+        
+        DrawerClickableItem:
+            icon: "send"
+            text: "INFRASTRUCTURE "
+            on_press:
+                root.nav_drawer.set_state("close")
+                root.screen_manager.current = "scr 2"
+        
+        
+        DrawerClickableItem:
+            icon: "send"
+            text: "LONG GOODS "
+            on_press:
+                root.nav_drawer.set_state("close")
+                root.screen_manager.current = "scr 3" 
                 
-                
-            DrawerClickableItem:
-                icon: "send"
-                right_text: "pass"
-                text_right_color: "#4a4939"
-                text: "LONG GOODS"
-                id: long_screen
-
-            DrawerClickableItem:
-                icon: "send"
-                text: "SHORT GOODS "
-                on_release: app.button_click()
-                id: short_screen
-
-            MDNavigationDrawerDivider:
+        
+        DrawerClickableItem: 
+            icon: "send"
+            text: "SHORT GOODS" 
+            on_press: 
+                root.nav_drawer.set_state("close") 
+                root.screen_manager.current = "scr 4" 
+        
+        MDNavigationDrawerDivider:
 
             MDNavigationDrawerLabel:
                 text: "Labels"
@@ -119,73 +160,22 @@ MDNavigationLayout:
 
             DrawerLabelItem:
                 icon: "information-outline"
-                text: "Label"
+                text: "Label"             
+            
+
 '''
 
-dia = '''
-MDFloatLayout:
 
-    MDRectangleFlatButton:
-        text: "ALERT DIALOG"
-        pos_hint: {'center_x': .5, 'center_y': 0.3}
-        on_release: app.show_alert_dialog()
-'''
+class ContentNavigationDrawer(MDScrollView):
+    screen_manager = ObjectProperty()
+    nav_drawer = ObjectProperty()
 
-class engineering(MDApp):
-    dialog = None
+class meter(MDApp):
     def build(self):
-        self.theme_cls.theme_style = "Dark"
         self.theme_cls.primary_palette = "Orange"
-        self.theme_cls.primary_hue = "300"
+        self.theme_cls.theme_style = "Dark"
+        #self.theme_cls.primary_hue = "200"
+        return Builder.load_string(KV)
 
 
-        screen = MDScreen()
-        man = Builder.load_string(kv)
-        woman = Builder.load_string(dia)
-
-
-        screen.add_widget(man)
-        screen.add_widget(woman)
-
-
-
-        return screen
-
-    def button_click(self):
-
-        button = self.root.ids.short_screen
-        button.text = "short good button clicked"
-
-
-    def show_alert_dialog(self):
-        if not self.dialog:
-            self.dialog = MDDialog(
-                title="Welcome",
-                text="Discard draft?",
-                buttons=[
-                    MDRectangleFlatButton(
-                        text="CANCEL",
-                        theme_text_color="Custom",
-                        text_color=self.theme_cls.primary_color,
-                    ),
-                    MDRectangleFlatButton(
-                        text="DISCARD",
-                        theme_text_color="Custom",
-                        text_color=self.theme_cls.primary_color,
-                    ),
-                ],
-            )
-        self.dialog.open()
-
-
-
-
-
-
-
-
-
-
-
-
-engineering().run()
+meter().run()
