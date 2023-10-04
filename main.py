@@ -1,11 +1,32 @@
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty
 
+import sqlite3
+
 from kivymd.app import MDApp
 from kivymd.uix.scrollview import MDScrollView
 from kivy.core.window import Window
+from kivy .properties import StringProperty
 
 Window.size = (300, 600)
+
+
+
+import sqlite3
+
+# Create or open a database file
+conn = sqlite3.connect("myapp.db")
+
+# Create a cursor object to execute SQL commands
+cursor = conn.cursor()
+
+# Create a table to store your data (e.g., a table for user inputs)
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS user_data (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        value TEXT
+    )
+''')
 
 KV = '''
 <DrawerClickableItem@MDNavigationDrawerItem>
@@ -46,7 +67,28 @@ MDScreen:
                     font_size: 20 
                     size_hint_x: None 
                     width: 500 
-                    font_text_color: "Red"
+                    
+                    MDBoxLayout:
+                        orientation: "vertical"
+                        ScrollView:
+                    
+                            
+                                
+                        MDTextField: 
+                            id: text_input
+                            hint_text: "Enter your Value"
+                            
+                       
+                            
+                        MDRaisedButton: 
+                            text: "save"
+                            on_release: app.save_value() 
+                            pos_hint:{"center_x": 0.5, "center_y": 0.5}
+                        
+                    
+                
+                    
+                                
                 
                           
                 
@@ -60,18 +102,26 @@ MDScreen:
                     pos_hint: {"center_x": 1, "center_y": 0.8} 
                     font_size: 20 
                     size_hint_x: None 
-                    width: 500  
+                    width: 500
                 
                     
             MDScreen:
                 name: "scr 3"
-
                 MDLabel:
                     text: " LONG GOODS  "
                     pos_hint: {"center_x": 1.1, "center_y": 0.8} 
                     font_size: 20
                     size_hint_x: None 
-                    width: 500   
+                    width: 500 
+                    
+                MDRectangleFlatButton:
+                    text: "LINE 1"
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                    
+                    
+                MDRectangleFlatButton:
+                    text: "LINE 2"
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.3}
                 
                     
             MDScreen: 
@@ -81,8 +131,20 @@ MDScreen:
                     pos_hint: {"center_x": 1.1, "center_y": 0.8} 
                     font_size: 20 
                     size_hint_x: None
-                    size_hint_y: None 
-                    width: 500  
+                    width: 500 
+                    
+                MDRectangleFlatButton:
+                    text: "LINE 1"
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                MDRectangleFlatButton:
+                    text: "LINE 2"
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.3}
+                
+                    
+                
+                    
+                
+                 
                 
                     
 
@@ -171,11 +233,39 @@ class ContentNavigationDrawer(MDScrollView):
     nav_drawer = ObjectProperty()
 
 class meter(MDApp):
+    display_value = StringProperty("")
+
+
     def build(self):
-        self.theme_cls.primary_palette = "Orange"
+
+        self.theme_cls.primary_palette = "Teal"
         self.theme_cls.theme_style = "Dark"
-        #self.theme_cls.primary_hue = "200"
+        self.theme_cls.material_style = "M2"
         return Builder.load_string(KV)
+
+    def save_value(self):
+        value = self.root.ids.text_input.text
+        if value:
+            self.insert_data(value)
+            self.root.ids.text_input.text = ""
+            self.update_display()
+
+    def insert_data(self, value):
+        conn = sqlite3.connect("myapp.db")
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO user_data (value) VALUES (?)", (value,))
+        conn.commit()
+        conn.close()
+
+    def update_display(self):
+        conn = sqlite3.connect("myapp.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT value FROM user_data")
+        data = cursor.fetchall()
+        conn.close()
+        self.display_value = "\n".join([str(item[0]) for item in data])
+
+
 
 
 meter().run()
